@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>NestJS Chat</title>
+    <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        #messages {
+            height: 400px;
+            overflow-y: scroll;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 8px 12px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+
+        .message .username {
+            font-weight: bold;
+            color: #2b5278;
+        }
+
+        .message .timestamp {
+            font-size: 0.8em;
+            color: #666;
+            margin-left: 10px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 8px 16px;
+            background-color: #0095f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0081d6;
+        }
+
+        #loginSection {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #chatSection {
+            display: none;
+        }
+
+        .system-message {
+            background-color: #f8f9fa;
+            color: #666;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+
+        #activeUsers {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="loginSection">
+            <h2>Join Chat</h2>
+            <div class="input-group">
+                <input type="text" id="username" placeholder="Enter your username">
+                <button onclick="join()">Join</button>
+            </div>
+        </div>
+
+        <div id="chatSection">
+            <div id="activeUsers">Active Users: </div>
+            <div id="messages"></div>
+            <div class="input-group">
+                <input type="text" id="message" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io('http://localhost:3000');
+        const messages = document.getElementById('messages');
+        const messageInput = document.getElementById('message');
+        const loginSection = document.getElementById('loginSection');
+        const chatSection = document.getElementById('chatSection');
+
+        socket.on('connect', () => {
+            console.log('Connected to server');
+        });
+
+        function join() {
+            const username = document.getElementById('username').value;
+            if (username.trim()) {
+                socket.emit('join', username);
+                loginSection.style.display = 'none';
+                chatSection.style.display = 'block';
+                messageInput.focus();
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message) {
+                socket.emit('message', message);
+                messageInput.value = '';
+            }
+        }
+
+        socket.on('message', (data) => {
+            const div = document.createElement('div');
+            div.className = 'message';
+            const time = new Date(data.timestamp).toLocaleTimeString();
+            div.innerHTML = `
+                <span class="username">${data.username}</span>
+                <span class="timestamp">${time}</span>
+                <div>${data.message}</div>
+            `;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        });
+
+        socket.on('users', (users) => {
+            // Update active users list
+            const activeUsersDiv = document.getElementById('activeUsers');
+            activeUsersDiv.innerHTML = `Active Users: ${users.join(', ')}`;
+        });
+
+        socket.on('userJoined', (username) => {
+            const div = document.createElement('div');
+            div.className = 'message system-message';
+            div.innerHTML = `
+                <span class="timestamp">${new Date().toLocaleTimeString()}</span>
+                <div>${username} has joined the chat</div>
+            `;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        });
+
+        socket.on('userLeft', (username) => {
+            const div = document.createElement('div');
+            div.className = 'message system-message';
+            div.innerHTML = `
+                <span class="timestamp">${new Date().toLocaleTimeString()}</span>
+                <div>${username} has left the chat</div>
+            `;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        });
+    </script>
+</body>
+
+</html>
