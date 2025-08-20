@@ -1,193 +1,54 @@
 # NestJS Real-Time Chat Application
 
-A real-time chat application built with NestJS and WebSocket technology, enabling instant messaging and user presence tracking.
+A WebSocket-based real-time chat application implemented with NestJS framework.
 
-## Features
+## Overview
 
-- 🚀 Real-time messaging using WebSockets
-- 👥 User join/leave notifications
-- 👀 Active users list
-- ⌚ Message timestamps
-- 🎨 Clean and responsive UI
-- ⚡ Instant message delivery
-- 🔒 CORS enabled
+- Real-time messaging with WebSocket
+- User presence tracking and notifications
+- Message timestamps and active users list
+- CORS-enabled secure communication
 
-## Prerequisites
+## Quick Start
 
-Before running this application, make sure you have the following installed:
+Requirements:
 
-- Node.js (v14 or higher)
-- npm (v6 or higher)
-
-## Installation
-
-1. Clone the repository:
+- Node.js (v14+)
+- npm (v6+)
 
 ```bash
-git clone <your-repository-url>
-cd nestjs-weather-app
-```
-
-1. Install dependencies:
-
-```bash
+git clone https://github.com/Abdin71/chat-application
+cd chat-application
 npm install
+npm run start:dev     # Development
+npm run start:prod    # Production
 ```
 
-## Running the Application
+Server runs at `http://localhost:3000`
 
-### Development Mode
+## Events Reference
 
-To run the application in development mode with hot-reload:
+From Client:
 
-```bash
-npm run start:dev
-```
+- `join(username: string)`: Join chat
+- `message(text: string)`: Send message
 
-### Production Mode
+From Server:
 
-To build and run the application in production mode:
+- `users(string[])`: Active users
+- `userJoined(string)`: User joined
+- `userLeft(string)`: User left
+- `message(object)`: New message received
 
-```bash
-npm run build
-npm run start:prod
-```
-
-The application will be available at `http://localhost:3000`
-
-## Testing
-
-### Running Unit Tests
-
-```bash
-npm run test
-```
-
-### Running E2E Tests
-
-```bash
-npm run test:e2e
-```
-
-### Test Coverage
-
-```bash
-npm run test:cov
-```
-
-## Project Structure
+## Architecture
 
 ```plaintext
 src/
-├── chat/
-│   ├── chat.gateway.ts     # WebSocket gateway implementation
-│   ├── chat.gateway.spec.ts # Gateway unit tests
-│   └── chat.module.ts      # Chat module definition
-├── app.module.ts           # Main application module
-├── app.controller.ts       # Main application controller
-├── app.service.ts         # Main application service
-└── main.ts               # Application entry point
-public/
-└── index.html           # Frontend chat interface
+├── chat/           # WebSocket implementation
+├── app.module.ts   # Main module
+└── main.ts        # Entry point
 ```
-
-## WebSocket Events
-
-### Client to Server Events
-
-- `join`: Emitted when a user joins the chat
-
-```typescript
-socket.emit('join', username);
-```
-
-- `message`: Emitted when a user sends a message
-
-```typescript
-socket.emit('message', messageText);
-```
-
-### Server to Client Events
-
-- `users`: Emitted when the active users list changes
-
-```typescript
-// Returns array of usernames
-socket.on('users', (users: string[]) => {});
-```
-
-- `userJoined`: Emitted when a new user joins
-
-```typescript
-socket.on('userJoined', (username: string) => {});
-```
-
-- `userLeft`: Emitted when a user leaves
-
-```typescript
-socket.on('userLeft', (username: string) => {});
-```
-
-- `message`: Emitted when a message is received
-
-```typescript
-socket.on('message', (data: {
-  username: string,
-  message: string,
-  timestamp: string
-}) => {});
-```
-
-## Frontend Interface
-
-The application provides a simple and intuitive web interface with:
-
-- Username input for joining the chat
-- Real-time message display with timestamps
-- Active users list
-- Message input with Enter key support
-- System notifications for user join/leave events
-
-## Future Enhancements
-
-- [ ] User authentication
-- [ ] Message persistence with database
-- [ ] Private messaging
-- [ ] Typing indicators
-- [ ] Chat rooms
-- [ ] File sharing
-- [ ] User avatars
-- [ ] Message reactions
-
-## Contributing
-
-1. Fork the repository
-
-1. Create your feature branch:
-
-```bash
-git checkout -b feature/amazing-feature
-```
-
-1. Commit your changes:
-
-```bash
-git commit -m 'Add some amazing feature'
-```
-
-1. Push to the branch:
-
-```bash
-git push origin feature/amazing-feature
-```
-
-1. Open a Pull Request
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- NestJS team for the excellent framework
-- Socket.IO team for the WebSocket implementation
+MIT - See [LICENSE](LICENSE)
