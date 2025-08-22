@@ -33,8 +33,34 @@
         .message {
             margin: 10px 0;
             padding: 8px 12px;
-            background-color: #e9ecef;
             border-radius: 4px;
+            word-wrap: break-word;
+        }
+
+        /* Public messages - Gray background */
+        .message-public {
+            background-color: #e9ecef;
+        }
+
+        /* Private messages - Blue background */
+        .message-private {
+            background-color: #e3f2fd;
+            color: #1976d2;
+            border: 1px solid #bbdefb;
+        }
+
+        /* System messages - Red background */
+        .message-system {
+            background-color: #ffebee;
+            color: #c62828;
+            font-style: italic;
+            text-align: center;
+        }
+
+        /* AI messages - Green background */
+        .message-ai {
+            background-color: #e8f5e9;
+            color: #2e7d32;
         }
 
         .message .username {
@@ -158,12 +184,20 @@
 
         socket.on('message', (data) => {
             const div = document.createElement('div');
-            div.className = 'message';
+            // Set base message class and specific type class
+            div.className = `message message-${data.type || 'public'}`;
             const time = new Date(data.timestamp).toLocaleTimeString();
+            
+            // For private messages, add indicator
+            let messagePrefix = '';
+            if (data.type === 'private') {
+                messagePrefix = data.to ? `[Private to ${data.to}] ` : '[Private] ';
+            }
+            
             div.innerHTML = `
                 <span class="username">${data.username}</span>
                 <span class="timestamp">${time}</span>
-                <div>${data.message}</div>
+                <div>${messagePrefix}${data.message}</div>
             `;
             messages.appendChild(div);
             messages.scrollTop = messages.scrollHeight;
@@ -177,7 +211,7 @@
 
         socket.on('userJoined', (username) => {
             const div = document.createElement('div');
-            div.className = 'message system-message';
+            div.className = 'message message-system';
             div.innerHTML = `
                 <span class="timestamp">${new Date().toLocaleTimeString()}</span>
                 <div>${username} has joined the chat</div>
@@ -188,7 +222,7 @@
 
         socket.on('userLeft', (username) => {
             const div = document.createElement('div');
-            div.className = 'message system-message';
+            div.className = 'message message-system';
             div.innerHTML = `
                 <span class="timestamp">${new Date().toLocaleTimeString()}</span>
                 <div>${username} has left the chat</div>

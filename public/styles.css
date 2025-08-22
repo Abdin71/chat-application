@@ -1,0 +1,34 @@
+.chat-message {
+  padding: 8px;
+  margin: 4px 0;
+  border-radius: 4px;
+}
+
+.message-public {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.message-private {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.message-system {
+  background-color: #ffebee;
+  color: #c62828;
+  font-style: italic;
+}
+
+.message-ai {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.message-sent {
+  text-align: right;
+}
+
+.message-received {
+  text-align: left;
+}
